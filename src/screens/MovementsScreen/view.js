@@ -39,7 +39,7 @@ import {
   CalendarStyled as Calendar,
   Loader,
 } from '../../componets';
-import { useMovementsDestroy } from '../../hooks';
+import { useMovementsDestroy, useMovementsBulkSaveData } from '../../hooks';
 import { useNotify } from '../../utils';
 import { DeleteIcon, EditIcon, ViewIcon } from '@chakra-ui/icons';
 import { DateTime } from 'luxon';
@@ -195,8 +195,10 @@ const View = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [date, onChange] = useState("")
   const { destroy, error, isLoading } = useMovementsDestroy();
+  const { saveData, error: ErrorBulk, isLoading: loadingBulk } = useMovementsBulkSaveData();
 
   useNotify(error, 'error', 'Error eliminando Convenio');
+  useNotify(ErrorBulk, 'error', 'Error insertando los movimientos');
 
   const updateChange = id => {
     const resultado = Movements.find(item => item.id === id);
@@ -295,7 +297,7 @@ const View = ({
     },
   ];
 
-  if (loading || isLoading) {
+  if (loading || isLoading || loadingBulk) {
     return <Loader />;
   }
 
@@ -349,6 +351,7 @@ const View = ({
             row={Movements}
             h={'auto'}
             search={date}
+            saveData={saveData}
           />
         </SimpleGrid>
       </Box>

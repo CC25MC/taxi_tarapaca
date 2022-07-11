@@ -97,8 +97,8 @@ export const AppBar = () => {
   const { logOut, isLoadinglogOut, errorlogOut } = useLogout();
   const { user } = useAuth();
   useNotify(errorlogOut, 'error', 'Error Cerrando Sesión');
-  useNotify(error, 'error', 'Error El servicio de mensajeria esta inactivo');
-  useNotify(ErrorQr, 'error', 'Error Obteniendo el Qr del Chat de mensajeria');
+  useNotify(error, 'error', 'Error El servicio de mensajeria esta inactivo', "ws");
+  useNotify(ErrorQr, 'error', 'Error Obteniendo el Qr del Chat de mensajeria', "ws");
   if (isLoadinglogOut) {
     return <Loader />;
   }

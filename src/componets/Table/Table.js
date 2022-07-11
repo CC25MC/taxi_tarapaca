@@ -41,6 +41,7 @@ import {
   SearchIcon,
   // ChevronDownIcon,\
 } from '@chakra-ui/icons';
+import { useLocation } from 'react-router-dom';
 import { FaFileExcel } from 'react-icons/fa';
 // import Data from "../Dataset/Data.json";
 import Data from './Data.json';
@@ -52,12 +53,73 @@ import {
   useAsyncDebounce,
 } from 'react-table';
 import { COLUMNS } from './Columns';
-import { format } from 'date-fns'
+import { download, filedownload, exportName } from '../../variables';
+import { format } from 'date-fns';
+import { read, utils, writeFile } from 'xlsx';
+import { useToast } from '@chakra-ui/react';
 
-export const DataTable = ({ title, onOpen, column, row, h, search }) => {
+export const DataTable = ({
+  title,
+  onOpen,
+  column,
+  row,
+  h,
+  search,
+  saveData,
+}) => {
+  let location = useLocation();
+  const toast = useToast();
   //   let columns = Object.keys(Data[0]);  //columns list before using react table.
 
   // we momoized the columns and data so that our table don't get render again and again.
+  const [excel, setExcel] = useState(null);
+
+  const handleChange = async e => {
+    const file = e.target.files[0];
+    const data = await file.arrayBuffer();
+    /* data is an ArrayBuffer */
+    // console.log(data);
+
+    setExcel(data);
+  };
+
+  const exportar = () => {
+    let data = utils.json_to_sheet(filedownload[location.pathname]);
+    const workbook = utils.book_new();
+    const filename = download[location.pathname];
+    utils.book_append_sheet(workbook, data, filename);
+    writeFile(workbook, filename);
+  };
+
+  const dataExport = () => {
+    let data = utils.json_to_sheet(row);
+    const workbook = utils.book_new();
+    const filename = exportName[location.pathname];
+    utils.book_append_sheet(workbook, data, filename);
+    writeFile(workbook, filename);
+  };
+
+  useEffect(() => {
+    if (excel) {
+      try {
+        const workbook = read(excel);
+        const workbookSheets = workbook.SheetNames;
+        const sheet = workbookSheets[0];
+        const dataExcel = utils.sheet_to_json(workbook.Sheets[sheet]);
+
+        saveData({ movimientos: dataExcel });
+      } catch (error) {
+        toast({
+          title: 'error',
+          description: 'Error Insertando los datos del excel',
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        });
+      }
+      setExcel(null);
+    }
+  }, [excel]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const columns = useMemo(() => column || COLUMNS, [column]);
   const data = useMemo(() => row || Data, [row]);
@@ -101,38 +163,10 @@ export const DataTable = ({ title, onOpen, column, row, h, search }) => {
 
   useEffect(() => {
     if (search) {
-      
       onChange(format(search, 'yyyy-MM-dd'));
       setValue(format(search, 'yyyy-MM-dd'));
     }
   }, [search]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // const [selectedSortColumn, setSelectedSortColumn] = useState({
-  //   id: '',
-  //   desc: false,
-  // });
-
-  // function handleSort(e) {
-  //   let temp = Object.assign({}, selectedSortColumn);
-  //   temp['id'] = e;
-  //   setSelectedSortColumn(temp);
-  //   setSortBy([temp]);
-  // }
-
-  // const typeOfSort = e => {
-  //   let tempColumn;
-  //   if (e === '0') {
-  //     tempColumn = Object.assign({}, selectedSortColumn);
-  //     tempColumn['desc'] = false;
-  //     setSelectedSortColumn(tempColumn);
-  //     setSortBy([tempColumn]);
-  //   } else {
-  //     tempColumn = Object.assign({}, selectedSortColumn);
-  //     tempColumn['desc'] = true;
-  //     setSelectedSortColumn(tempColumn);
-  //     setSortBy([tempColumn]);
-  //   }
-  // };
 
   return (
     <Box border={'1px solid'} borderColor="gray.200" h={h} borderRadius={'xl'}>
@@ -178,14 +212,16 @@ export const DataTable = ({ title, onOpen, column, row, h, search }) => {
                 <PopoverBody w="full">
                   <Tabs isLazy colorScheme="yellow">
                     <TabList>
-                      <Tab
-                        _focus={{ boxShadow: 'none' }}
-                        fontSize="xs"
-                        fontWeight="bold"
-                        w="50%"
-                      >
-                        Importar
-                      </Tab>
+                      {saveData && (
+                        <Tab
+                          _focus={{ boxShadow: 'none' }}
+                          fontSize="xs"
+                          fontWeight="bold"
+                          w="50%"
+                        >
+                          Importar
+                        </Tab>
+                      )}
                       <Tab
                         _focus={{ boxShadow: 'none' }}
                         fontSize="xs"
@@ -196,23 +232,57 @@ export const DataTable = ({ title, onOpen, column, row, h, search }) => {
                       </Tab>
                     </TabList>
                     <TabPanels>
+                      {saveData && (
+                        <TabPanel>
+                          {/* You can add your content here. */}
+                          Antes de importar los datos te dejamos esta plantilla
+                          para descargar, donde tendras el formato correcto que
+                          debe cumplir el excel.
+                          <Box display={'flex'} mt="3">
+                            <Button
+                              maxW={'md'}
+                              variant={'outline'}
+                              onClick={exportar}
+                            >
+                              <Text>Plantilla</Text>
+                            </Button>
+                            <label
+                              htmlFor="contained-button-file"
+                              style={{ marginLeft: 'auto' }}
+                            >
+                              <input
+                                accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                                id="contained-button-file"
+                                multiple
+                                type="file"
+                                style={{ display: 'none' }}
+                                onChange={handleChange}
+                              />
+                              <Button
+                                id="contained-button-file"
+                                maxW={'md'}
+                                bg={'primary'}
+                                variant={'outline'}
+                                as="span"
+                              >
+                                Importar
+                              </Button>
+                            </label>
+                          </Box>
+                        </TabPanel>
+                      )}
                       <TabPanel>
-                        {/* You can add your content here. */}
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Elementum curabitur vitae nunc sed velit
-                        dignissim sodales ut eu. Mauris nunc congue nisi vitae
-                        suscipit tellus mauris a diam. Eros in cursus turpis
-                        massa tincidunt.
-                      </TabPanel>
-                      <TabPanel>
-                        {/* You can add your content here. */}
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Elementum curabitur vitae nunc sed velit
-                        dignissim sodales ut eu. Mauris nunc congue nisi vitae
-                        suscipit tellus mauris a diam. Eros in cursus turpis
-                        massa tincidunt.
+                        Exportá todos los datos contenidos en esta tabla.
+                        <Button
+                          isFullWidth
+                          bg={'primary'}
+                          ml="auto"
+                          mt={'3'}
+                          onClick={dataExport}
+                          variant={'outline'}
+                        >
+                          <Text>Exportar</Text>
+                        </Button>
                       </TabPanel>
                     </TabPanels>
                   </Tabs>

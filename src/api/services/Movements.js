@@ -14,6 +14,11 @@ export const postMovements = async payload => {
   return res.data;
 };
 
+export const BulkMovements = async payload => {
+  const res = await request.post(endpoints.get+"/bulk", payload);
+  return res.data;
+};
+
 export const putMovements = async payload => {
   const res = await request.put(
     endpoints.get + `/${payload.id}`,

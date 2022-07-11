@@ -54,6 +54,38 @@ export const useMovementsSaveData = () => {
   };
 };
 
+export const useMovementsBulkSaveData = () => {
+  const toast = useToast();
+  const { token } = useToken();
+  request.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+  const {
+    mutate: saveData,
+    isLoading,
+    error,
+  } = useMutation(
+    payload => request.movements.BulkMovements(payload),
+    {
+      onSuccess: data => {
+        if (data) {
+          toast({
+            title: 'Exito',
+            description: data?.message,
+            status: 'success',
+            duration: 5000,
+            isClosable: true,
+          });
+        }
+      },
+    }
+  );
+
+  return {
+    isLoadingUserPost: isLoading,
+    errorUserPost: error,
+    saveData,
+  };
+};
 export const useMovementsDestroy = () => {
   const toast = useToast();
   const { token } = useToken();

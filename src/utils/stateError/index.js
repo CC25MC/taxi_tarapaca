@@ -4,7 +4,7 @@ import { useToast } from '@chakra-ui/react';
 import { useNavigate } from 'react-router';
 import { useAuth, useToken } from '../../hooks';
 
-export const useNotify = (error, variant, title, status) => {
+export const useNotify = (error, variant, title, path) => {
   const toast = useToast();
   const navigate = useNavigate();
   const { setAuth, setUser } = useAuth();
@@ -13,11 +13,11 @@ export const useNotify = (error, variant, title, status) => {
   useEffect(() => {
     if (error) {
       if (
-        error.status === 500 ||
+        (error.status === 500 ||
         error.status === 401 ||
         error.request.status === 500 ||
         error.request.status === 401 ||
-        error.message === 'Network Error'
+        error.message === 'Network Error') && path !== "ws" // eslint-disable-line react-hooks/exhaustive-deps
       ) {
         setToken('');
         setUser({});
