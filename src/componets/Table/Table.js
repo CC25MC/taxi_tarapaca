@@ -107,7 +107,7 @@ export const DataTable = ({
         const sheet = workbookSheets[0];
         const dataExcel = utils.sheet_to_json(workbook.Sheets[sheet]);
 
-        saveData({ movimientos: dataExcel });
+        saveData({ data: dataExcel });
       } catch (error) {
         toast({
           title: 'error',
@@ -193,7 +193,7 @@ export const DataTable = ({
                 />
               </InputGroup>
             </Box>
-            <Popover placement="bottom" isLazy>
+            <Popover>
               <PopoverTrigger>
                 <Button
                   maxW={'md'}

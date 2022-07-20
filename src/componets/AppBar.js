@@ -15,16 +15,16 @@ import {
   Stack,
   Heading,
   Divider,
-  Tooltip,
-  Tag,
-  TagLabel,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverHeader,
-  PopoverBody,
-  PopoverArrow,
-  PopoverCloseButton,
+  // Tooltip,
+  // Tag,
+  // TagLabel,
+  // Popover,
+  // PopoverTrigger,
+  // PopoverContent,
+  // PopoverHeader,
+  // PopoverBody,
+  // PopoverArrow,
+  // PopoverCloseButton,
 } from '@chakra-ui/react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -32,10 +32,12 @@ import {
   CloseIcon,
   AddIcon,
   InfoOutlineIcon,
-  ChatIcon,
+  // ChatIcon,
 } from '@chakra-ui/icons';
-import QRCode from 'react-qr-code';
-import { useLogout, useAuth, useGetStatus, useGetQr } from '../hooks';
+// import QRCode from 'react-qr-code';
+import { useLogout, useAuth, 
+  // useGetStatus, useGetQr 
+} from '../hooks';
 import { useNotify } from '../utils';
 import { Loader } from './Loader';
 
@@ -90,15 +92,15 @@ const NavLink = ({ children, location }) => {
 
 export const AppBar = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { data, error, isLoading } = useGetStatus();
-  const { data: dataQr, error: ErrorQr, isLoading: isLoadingQr } = useGetQr();
+  // const { data, error, isLoading } = useGetStatus();
+  // const { data: dataQr, error: ErrorQr, isLoading: isLoadingQr } = useGetQr();
   let location = useLocation();
   let navigate = useNavigate();
   const { logOut, isLoadinglogOut, errorlogOut } = useLogout();
   const { user } = useAuth();
   useNotify(errorlogOut, 'error', 'Error Cerrando Sesión');
-  useNotify(error, 'error', 'Error El servicio de mensajeria esta inactivo', "ws");
-  useNotify(ErrorQr, 'error', 'Error Obteniendo el Qr del Chat de mensajeria', "ws");
+  // useNotify(error, 'error', 'Error El servicio de mensajeria esta inactivo', "ws");
+  // useNotify(ErrorQr, 'error', 'Error Obteniendo el Qr del Chat de mensajeria', "ws");
   if (isLoadinglogOut) {
     return <Loader />;
   }
@@ -132,7 +134,7 @@ export const AppBar = () => {
           </HStack>
           <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={2}>
-              <Popover placement="bottom" isLazy>
+              {/* <Popover placement="bottom" isLazy>
                 <PopoverTrigger>
                   <Button bg={'white'}>
                     <Tooltip
@@ -171,7 +173,7 @@ export const AppBar = () => {
                     )}
                   </PopoverBody>
                 </PopoverContent>
-              </Popover>
+              </Popover> */}
 
               <Menu>
                 <MenuButton

@@ -22,6 +22,11 @@ export const putAgreements = async payload => {
   return res.data;
 };
 
+export const BulkAgreements = async payload => {
+  const res = await request.post(endpoints.get+"/bulk", payload);
+  return res.data;
+};
+
 export const deleteAgreements = async id => {
   const res = await request.delete(endpoints.get + `/${id}`);
   return res.data;

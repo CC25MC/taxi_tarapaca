@@ -54,6 +54,36 @@ export const useServiceSaveData = () => {
   };
 };
 
+export const useServiceBulkSaveData = () => {
+  const toast = useToast();
+  const { token } = useToken();
+  request.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+  const {
+    mutate: saveData,
+    isLoading,
+    error,
+  } = useMutation(payload => request.service.BulkService(payload), {
+    onSuccess: data => {
+      if (data) {
+        toast({
+          title: 'Exito',
+          description: data?.message,
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    },
+  });
+
+  return {
+    isLoading,
+    error,
+    saveData,
+  };
+};
+
 export const useServiceDestroy = () => {
   const toast = useToast();
   const { token } = useToken();

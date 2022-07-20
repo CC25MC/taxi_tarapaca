@@ -14,6 +14,11 @@ export const postUser = async payload => {
   return res.data;
 };
 
+export const BulkUser = async payload => {
+  const res = await request.post(endpoints.get+"/bulk", payload);
+  return res.data;
+};
+
 export const putUser = async payload => {
   const res = await request.put(
     endpoints.get + `/${payload.id}`,

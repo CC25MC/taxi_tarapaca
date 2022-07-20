@@ -198,7 +198,7 @@ const View = ({
   const { saveData, error: ErrorBulk, isLoading: loadingBulk } = useMovementsBulkSaveData();
 
   useNotify(error, 'error', 'Error eliminando Convenio');
-  useNotify(ErrorBulk, 'error', 'Error insertando los movimientos');
+  useNotify(ErrorBulk, 'error', 'Error insertando los movimientos', "ws");
 
   const updateChange = id => {
     const resultado = Movements.find(item => item.id === id);
@@ -445,7 +445,7 @@ const View = ({
                           <option value={''}>Seleccionar Opciones</option>
                           {Automobiles.map((item, key) => (
                             <option key={key} value={item?.id}>
-                              {item?.id} - {item?.nombre}
+                              {item?.id} - {item?.nombre} - {item?.telefono}
                             </option>
                           ))}
                         </Select>

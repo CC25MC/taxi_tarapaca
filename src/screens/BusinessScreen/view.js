@@ -14,7 +14,7 @@ import {
 import React from 'react';
 import { AppBar, DataTable, Loader } from '../../componets';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
-import { useClientDestroy } from '../../hooks';
+import { useClientDestroy, useClientBulkSaveData } from '../../hooks';
 import { useNotify } from '../../utils';
 import { DateTime } from 'luxon';
 
@@ -172,7 +172,13 @@ const View = ({
   loading,
 }) => {
   const { destroy, error, isLoading } = useClientDestroy();
+  const {
+    saveData,
+    error: ErrorBulk,
+    isLoading: loadingBulk,
+  } = useClientBulkSaveData();
 
+  useNotify(ErrorBulk, 'error', 'Error insertando las Empresas', 'ws');
   useNotify(error, 'error', 'Error eliminando Moviles');
 
   const updateChange = id => {
@@ -243,7 +249,7 @@ const View = ({
     },
   ];
 
-  if (loading || isLoading) {
+  if (loading || isLoading || loadingBulk) {
     return <Loader />;
   }
 
@@ -280,6 +286,7 @@ const View = ({
               h={'auto'}
               column={COLUMNS}
               row={Clients}
+              saveData={saveData}
             />
           </Box>
         </SimpleGrid>

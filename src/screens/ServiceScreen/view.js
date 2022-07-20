@@ -14,7 +14,7 @@ import {
 import React from 'react';
 import { AppBar, DataTable, Loader } from '../../componets';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
-import { useServiceDestroy } from '../../hooks';
+import { useServiceDestroy, useServiceBulkSaveData } from '../../hooks';
 import { useNotify } from '../../utils';
 import { HexColorPicker } from 'react-colorful';
 import { DateTime } from 'luxon';
@@ -109,9 +109,13 @@ const View = ({
   loading,
 }) => {
   const { destroy, error, isLoading } = useServiceDestroy();
-
+  const {
+    saveData,
+    error: ErrorService,
+    isLoading: LoadingService,
+  } = useServiceBulkSaveData();
   useNotify(error, 'error', 'Error eliminando Servicios');
-
+  useNotify(ErrorService, 'error', 'Error Insertando Los Servicios', "ws");
   const updateChange = id => {
     const resultado = Services.find(item => item.id === id);
     if (resultado) {
@@ -128,9 +132,7 @@ const View = ({
       Header: 'Aviso',
       accessor: 'aviso',
       Cell: data => {
-        return (
-          data.row.original.aviso + "Min"
-        );
+        return data.row.original.aviso + 'Min';
       },
     },
     {
@@ -159,7 +161,9 @@ const View = ({
       Header: 'Fecha',
       accessor: 'created_at',
       Cell: data => {
-        return DateTime.fromISO(data.row.original.created_at).toLocaleString(DateTime.DATE_FULL);
+        return DateTime.fromISO(data.row.original.created_at).toLocaleString(
+          DateTime.DATE_FULL
+        );
       },
     },
     {
@@ -185,7 +189,7 @@ const View = ({
     },
   ];
 
-  if (loading || isLoading) {
+  if (loading || isLoading || LoadingService) {
     return <Loader />;
   }
   return (
@@ -211,6 +215,7 @@ const View = ({
               row={Services}
               column={COLUMNS}
               h={'auto'}
+              saveData={saveData}
             />
           </Box>
         </SimpleGrid>

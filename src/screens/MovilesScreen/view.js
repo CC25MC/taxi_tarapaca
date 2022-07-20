@@ -16,7 +16,7 @@ import {
 import React from 'react';
 import { AppBar, DataTable, Loader } from '../../componets';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
-import { useAutomobilesDestroy } from '../../hooks';
+import { useAutomobilesDestroy, useAutomobilesBulkSaveData } from '../../hooks';
 import { useNotify } from '../../utils';
 import { DateTime } from 'luxon';
 
@@ -186,7 +186,13 @@ const View = ({
   loading,
 }) => {
   const { destroy, error, isLoading } = useAutomobilesDestroy();
+  const {
+    saveData,
+    error: ErrorBulk,
+    isLoading: loadingBulk,
+  } = useAutomobilesBulkSaveData();
 
+  useNotify(ErrorBulk, 'error', 'Error insertando los Automoviles', 'ws');
   useNotify(error, 'error', 'Error eliminando Moviles');
 
   const updateChange = id => {
@@ -269,7 +275,7 @@ const View = ({
     },
   ];
 
-  if (loading || isLoading) {
+  if (loading || isLoading || loadingBulk) {
     return <Loader />;
   }
   return (
@@ -309,6 +315,7 @@ const View = ({
               h={'auto'}
               column={COLUMNS}
               row={Automobiles}
+              saveData={saveData}
             />
           </Box>
         </SimpleGrid>

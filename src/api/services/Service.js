@@ -21,6 +21,10 @@ export const putService = async payload => {
   );
   return res.data;
 };
+export const BulkService = async payload => {
+  const res = await request.post(endpoints.get+"/bulk", payload);
+  return res.data;
+};
 
 export const deleteService = async id => {
   const res = await request.delete(endpoints.get + `/${id}`);

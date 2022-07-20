@@ -1,4 +1,4 @@
-import {request} from '../api';
+import { request } from '../api';
 import { useMutation, useQuery } from 'react-query';
 import { useToken } from './useToken';
 import { useToast } from '@chakra-ui/react';
@@ -50,6 +50,36 @@ export const useAgreementsSaveData = () => {
   return {
     isLoadingUserPost: isLoading,
     errorUserPost: error,
+    saveData,
+  };
+};
+
+export const useAgreementsBulkSaveData = () => {
+  const toast = useToast();
+  const { token } = useToken();
+  request.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+  const {
+    mutate: saveData,
+    isLoading,
+    error,
+  } = useMutation(payload => request.agreements.BulkAgreements(payload), {
+    onSuccess: data => {
+      if (data) {
+        toast({
+          title: 'Exito',
+          description: data?.message,
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    },
+  });
+
+  return {
+    isLoading,
+    error,
     saveData,
   };
 };

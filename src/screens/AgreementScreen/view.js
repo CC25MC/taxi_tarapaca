@@ -17,7 +17,7 @@ import {
 import React from 'react';
 import { DeleteIcon, EditIcon, ExternalLinkIcon } from '@chakra-ui/icons';
 import { AppBar, DataTable, DropZone, Loader } from '../../componets';
-import { useAgreementsDestroy } from '../../hooks';
+import { useAgreementsDestroy, useAgreementsBulkSaveData } from '../../hooks';
 import { useNotify } from '../../utils';
 import { DateTime } from 'luxon';
 
@@ -99,7 +99,13 @@ const View = ({
   handleimg,
 }) => {
   const { destroy, error, isLoading } = useAgreementsDestroy();
+  const {
+    saveData,
+    error: ErrorBulk,
+    isLoading: loadingBulk,
+  } = useAgreementsBulkSaveData();
 
+  useNotify(ErrorBulk, 'error', 'Error insertando los Automoviles', 'ws');
   useNotify(error, 'error', 'Error eliminando Convenio');
 
   const updateChange = id => {
@@ -166,7 +172,7 @@ const View = ({
     },
   ];
 
-  if (loading || isLoading) {
+  if (loading || isLoading || loadingBulk) {
     return <Loader />;
   }
 
@@ -199,7 +205,12 @@ const View = ({
             </VStack>
           </Box>
           <Box h="100%">
-            <DataTable title={'Convenio'} column={COLUMNS} row={Agreements} />
+            <DataTable
+              title={'Convenio'}
+              column={COLUMNS}
+              row={Agreements}
+              saveData={saveData}
+            />
           </Box>
         </SimpleGrid>
       </Box>

@@ -20,7 +20,7 @@ import {
 import { useRef, useState } from 'react';
 import { AppBar, DataTable, Loader } from '../../componets';
 import { ViewIcon, ViewOffIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
-import { useUserDestroy } from '../../hooks';
+import { useUserDestroy, useUserBulkSaveData } from '../../hooks';
 import { useNotify } from '../../utils';
 import { DateTime } from 'luxon';
 
@@ -42,7 +42,13 @@ const View = ({
   const firstField = useRef();
   const [showPassword, setShowPassword] = useState(false);
   const { destroy, error, isLoading } = useUserDestroy();
+  const {
+    saveData,
+    error: ErrorUser,
+    isLoading: LoadingUser,
+  } = useUserBulkSaveData();
   useNotify(error, 'error', 'Error eliminando Usuario');
+  useNotify(ErrorUser, 'error', 'Error Insertando Usuarios', "ws");
 
   const updateChange = id => {
     const resultado = users?.data.find(item => item.id === id);
@@ -51,7 +57,7 @@ const View = ({
       onOpen();
     }
   };
-  if (loading || isLoading) {
+  if (loading || isLoading || LoadingUser) {
     return <Loader />;
   }
   const COLUMNS = [
@@ -123,6 +129,7 @@ const View = ({
           column={COLUMNS}
           row={users?.data}
           onOpen={onOpen}
+          saveData={saveData}
         />
       </Box>
 

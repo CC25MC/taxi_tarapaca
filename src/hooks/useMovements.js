@@ -1,16 +1,35 @@
-import {request} from '../api';
+import { request } from '../api';
 import { useMutation, useQuery } from 'react-query';
 import { useToken } from './useToken';
 import { useToast } from '@chakra-ui/react';
+import { useState } from 'react';
+
+export const useMovementsData = () => {
+  const [movements, setMovements] = useState([]);
+  return {
+    movements,
+    setMovements,
+  };
+};
 
 export const useMovementsGet = () => {
   const { token } = useToken();
+  const { setMovements } = useMovementsData();
   request.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
   const { isLoading, data, error } = useQuery(
     '/api/movimiento',
     () => request.movements.getMovements(),
-    { refetchInterval: 5000 }
+    {
+      refetchInterval: 5000,
+      onSuccess: data => {
+        if (data) {
+          setMovements(data);
+        }
+      },
+    }
   );
+
   return {
     isLoading,
     data: data || {},
@@ -63,22 +82,19 @@ export const useMovementsBulkSaveData = () => {
     mutate: saveData,
     isLoading,
     error,
-  } = useMutation(
-    payload => request.movements.BulkMovements(payload),
-    {
-      onSuccess: data => {
-        if (data) {
-          toast({
-            title: 'Exito',
-            description: data?.message,
-            status: 'success',
-            duration: 5000,
-            isClosable: true,
-          });
-        }
-      },
-    }
-  );
+  } = useMutation(payload => request.movements.BulkMovements(payload), {
+    onSuccess: data => {
+      if (data) {
+        toast({
+          title: 'Exito',
+          description: data?.message,
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    },
+  });
 
   return {
     isLoadingUserPost: isLoading,
